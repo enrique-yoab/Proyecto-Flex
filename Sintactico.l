@@ -129,22 +129,22 @@ Asignacion (\=)
                     contador_global++;                                                          //se incrementael contador de llaves global
                 } //5
 
-{Op_aritmetico} {printf("Op aritmetico\n");
-                    clase=6;
-                    datos=yytext;
-                    TOKEN *llave=malloc(sizeof(TOKEN));
-                    ADD_VALUE_TOKEN(llave, clase, contador_global, datos, contador_global);
-                    ADD_VALUE_SIMBOLOS(TABLA_SIMBOLOS, llave, contador_global);
-                    contador_global++;
+{Op_aritmetico} {printf("Op aritmetico\n");                                                     //se imprimer Op aritmetico cuando se encuentra una coincidencia con la regla de produccion
+                    clase=6;                                                                    //se asigna el valor de 6 a la clase   
+                    datos=yytext;                                                               //se asigna al puntero char, la coincidencia, en esta caso el operador encontrando
+                    TOKEN *llave=malloc(sizeof(TOKEN));                                         //se crea el token con memoria dinamica
+                    ADD_VALUE_TOKEN(llave, clase, contador_global, datos, contador_global);     //se agrega al token la clase y el valor en la posicion de la tabla
+                    ADD_VALUE_SIMBOLOS(TABLA_SIMBOLOS, llave, contador_global);                 //se agrega a la tabla de simbolos
+                    contador_global++;                                                          //se incrementa el valor de las llaves global
                 } //6
 
-{Op_relacional} {printf("Op relacional\n");
-                    clase=7;
-                    datos=yytext;
-                    TOKEN *llave=malloc(sizeof(TOKEN));
-                    ADD_VALUE_TOKEN(llave, clase, contador_global, datos, contador_global);
-                    ADD_VALUE_SIMBOLOS(TABLA_SIMBOLOS, llave, contador_global);
-                    contador_global++;
+{Op_relacional} {printf("Op relacional\n");                                                     //se imprimer Op relacional si se encuentra una coincidencia
+                    clase=7;                                                                    //se agrega el valor de 7 a la clase
+                    datos=yytext;                                                               //se agrega al puntero la coincidencia, en este caso el operador
+                    TOKEN *llave=malloc(sizeof(TOKEN));                                         //se crea el token con memoria dinamica
+                    ADD_VALUE_TOKEN(llave, clase, contador_global, datos, contador_global);     //se agrega los valores al token creado, que es su clase y la posicion del operador de su respectiva tabla
+                    ADD_VALUE_SIMBOLOS(TABLA_SIMBOLOS, llave, contador_global);                 //se agrega el token a la tabla de simbolos con su posicion
+                    contador_global++;                                                          //se incrementa el contador de llaves global
                 } //7
 
 {Asignacion} {printf("Asignacion\n");
