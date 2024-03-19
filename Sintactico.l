@@ -90,43 +90,43 @@ Asignacion (\=)
             contador_global++;                                                          //se incrementa el contador global de las llaves
           } //2
 
-{Real} { printf("Es un real\n");
-            clase = 3;
-            datos = yytext;
-            TOKEN *llave = malloc(sizeof(TOKEN));
-            ADD_VALUE_TOKEN(llave, clase, cont_const_num, datos, contador_global);
-            ADD_VALUE_SIMBOLOS(TABLA_SIMBOLOS, llave, contador_global);
-            if (inicio == 0 || repetido(TABLA_CONSTANTES, datos, cont_const_num) == 0) {
-                // Si es el primer valor o no está repetido, se agrega a la lista de constantes
-                ADD_VALUE_CONSTANTE_NUMERICA(TABLA_CONSTANTES, llave, cont_const_num);
-                inicio++;
-                cont_const_num++;
+{Real} { printf("Es un real\n");                                                                    //se imprime real si encuentra una coincidencia en la regla de produccion
+            clase = 3;                                                                              //se agrega el valor de 3 a la clase
+            datos = yytext;                                                                         //se agrega al puntero caracter la coincidencia de la regla de produccion
+            TOKEN *llave = malloc(sizeof(TOKEN));                                                   //se crea el token con memoria dinamica
+            ADD_VALUE_TOKEN(llave, clase, cont_const_num, datos, contador_global);                  // se agregan los valores al token que es su posicion en la tabla constante y la posicion, junto con su clase
+            ADD_VALUE_SIMBOLOS(TABLA_SIMBOLOS, llave, contador_global);                             //se agrega el token creado a la tabla de simbolos
+            if (inicio == 0 || repetido(TABLA_CONSTANTES, datos, cont_const_num) == 0) {            //se agrega el primer valor a la tabla de constantes y si se repite no entra al if por lo que no se agrega a la tabla
+                // Si es el primer valor o no está repetido, se agrega a la lista de constantes     //de constantes numericas
+                ADD_VALUE_CONSTANTE_NUMERICA(TABLA_CONSTANTES, llave, cont_const_num);              //agrega el token a la tabla de constantes numericas si es que no se repite
+                inicio++;                                                                           //se incrementa el inicio para que ya no sea de utilidad para el if
+                cont_const_num++;                                                                   //se incrementa el contador de las constante numericas
             }
-            contador_global++;
+            contador_global++;                                                                      //se incrementa el valor de las llaves globales
         } //3
 
-{Cadena} {printf("Es una cadena\n");
-            clase=4;
-            datos=yytext;
-            TOKEN *llave=malloc(sizeof(TOKEN));
-            ADD_VALUE_TOKEN(llave, clase, contador_global, datos, contador_global);
-            ADD_VALUE_SIMBOLOS(TABLA_SIMBOLOS,llave,contador_global);
-            if(aux==0 || repetidoC(TABLA_CADENAS,datos,cont_cadena)==0){
-                ADD_VALUE_CADENAS(TABLA_CADENAS, llave, cont_cadena);
-                aux++;
-                cont_cadena++;
-            }
-            contador_global++;
+{Cadena} {printf("Es una cadena\n");                                                            //se imrprime cadena si es que la regla de produccion encuentra una coincidencia
+            clase=4;                                                                            //se asgina el valor de 4 a la clase
+            datos=yytext;                                                                       //se agrega al puntero caracter la cadena que coincidio con la regla de produccion
+            TOKEN *llave=malloc(sizeof(TOKEN));                                                 //se crea el token con memoria dinamica
+            ADD_VALUE_TOKEN(llave, clase, contador_global, datos, contador_global);             //se agrega los valores del token que es su clase, su valor el cual es la posicion en su tablas y la palabra
+            ADD_VALUE_SIMBOLOS(TABLA_SIMBOLOS,llave,contador_global);                           //se agrega el token a la tabla de simbolos
+            if(aux==0 || repetidoC(TABLA_CADENAS,datos,cont_cadena)==0){                        //se verifica agrega la llave a la tabla cadena si es el primero y si no esta repetido
+                ADD_VALUE_CADENAS(TABLA_CADENAS, llave, cont_cadena);                           //se agrega el token a la tabla de cadena
+                aux++;                                                                          //se incrementa el aux ya que no sera el primero, y solo se verifica si se repite
+                cont_cadena++;                                                                  //se incrementa el contador de cadenas que es la posicion en su tabla.
+            }   
+            contador_global++;                                                                  //se incrementa el contador de llaves global
          } //4
 
-{Sim_especiales} {printf("Simbolo especial\n");
-                    clase=5;
-                    datos=yytext;
-                    TOKEN *llave=malloc(sizeof(TOKEN));
-                    int ASCII= (int)*datos;
-                    ADD_VALUE_TOKEN(llave, clase, ASCII, datos, contador_global);
-                    ADD_VALUE_SIMBOLOS(TABLA_SIMBOLOS, llave, contador_global);
-                    contador_global++;
+{Sim_especiales} {printf("Simbolo especial\n");                                                 //se imprime el simbolo especial si se encuentra un coincidencia
+                    clase=5;                                                                    //se agrega el valor de 5
+                    datos=yytext;                                                               //se agrega al puntero caracter el la palabra que coincidio con la regla de produccion
+                    TOKEN *llave=malloc(sizeof(TOKEN));                                         //se crea el token con memoria dinamica
+                    int ASCII= (int)*datos;                                                     //se hace un cast al puntero caracter para que nos de el valor en ASCII
+                    ADD_VALUE_TOKEN(llave, clase, ASCII, datos, contador_global);               //se agrega el token su clase y el valor de ASCII, junto con el simbolo y su posicion
+                    ADD_VALUE_SIMBOLOS(TABLA_SIMBOLOS, llave, contador_global);                 //se agrega el token a la tabla de simbolos
+                    contador_global++;                                                          //se incrementael contador de llaves global
                 } //5
 
 {Op_aritmetico} {printf("Op aritmetico\n");
