@@ -156,7 +156,7 @@ Asignacion (\=)
                     ADD_VALUE_SIMBOLOS(TABLA_SIMBOLOS, llave, contador_global);                 //se agrega a la tabla de simbolos
                     contador_global++;                                                          //se incrementa el valor de las llave global
              } //8
-\n {renglones++;}
+\n {renglones++;} //contador de renglones
 
 . { cont_errores++;
     archivoError=fopen("ERRORES.txt","a"); //se abre el archivo en modo escritura
