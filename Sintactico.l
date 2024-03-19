@@ -2,13 +2,14 @@
     #include <stdio.h>
     #include "tablas.h"
 
-    int clase, cont_par, contador_global, cont_const_num, cont_identidad, cont_cadena;
+    int clase, cont_par, contador_global, cont_const_num, cont_identidad, cont_cadena, cont_errores;
     T_simbolos *TABLA_SIMBOLOS;
     T_identity *TABLA_IDENTIDADES;
     T_const_num *TABLA_CONSTANTES;
     T_cadenas *TABLA_CADENAS;
+    FILE *archivoError;
     char *datos;
-    int inicio, aux;
+    int inicio, aux, renglones=1;
 %}
 
 /* Expresiones regulares */
@@ -155,13 +156,24 @@ Asignacion (\=)
                     ADD_VALUE_SIMBOLOS(TABLA_SIMBOLOS, llave, contador_global);                 //se agrega a la tabla de simbolos
                     contador_global++;                                                          //se incrementa el valor de las llave global
              } //8
+\n {renglones++;}
 
-. {printf("Error\n");}          //Imprime error si es que no hay coincidencia con alguna de las producciones anteriores
+. { cont_errores++;
+    archivoError=fopen("ERRORES.txt","a"); //se abre el archivo en modo escritura
+    if (archivoError != NULL) {
+        datos = "Error";
+        fprintf(archivoError, "%s %d, en el renglon %d\n", datos, cont_errores, renglones);  // Escribe la cadena en el archivo
+        printf("Error se ha escrito en el archivo.\n"); //Imprime error si es que no hay coincidencia con alguna de las producciones anteriores
+        fclose(archivoError);  // Cierra el archivo después de escribir
+    } else {
+        printf("No se pudo abrir el archivo.\n"); 
+    }
+}
+
 %%
 
 
 int main(int argc, char *argv[]) {
-
     //se crean las tablas con memoria dinamica
     TABLA_SIMBOLOS=malloc(sizeof(T_simbolos));
     TABLA_IDENTIDADES=malloc(sizeof(T_identity));

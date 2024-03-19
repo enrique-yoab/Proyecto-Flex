@@ -351,8 +351,8 @@ static void yynoreturn yy_fatal_error ( const char* msg  );
 	(yy_hold_char) = *yy_cp; \
 	*yy_cp = '\0'; \
 	(yy_c_buf_p) = yy_cp;
-#define YY_NUM_RULES 11
-#define YY_END_OF_BUFFER 12
+#define YY_NUM_RULES 12
+#define YY_END_OF_BUFFER 13
 /* This struct is not used in this scanner,
    but its presence is necessary. */
 struct yy_trans_info
@@ -362,8 +362,8 @@ struct yy_trans_info
 	};
 static const flex_int16_t yy_accept[91] =
     {   0,
-        5,    5,   12,   10,   11,   10,   10,    2,    7,    6,
-       10,    3,    3,    8,    9,    8,    5,    5,    5,    5,
+        5,    5,   13,   11,   10,   11,   11,    2,    7,    6,
+       11,    3,    3,    8,    9,    8,    5,    5,    5,    5,
         5,    5,    5,    5,    5,    5,    5,    5,    8,    0,
         5,    2,    2,    4,    0,    0,    3,    5,    3,    5,
         5,    5,    5,    5,    1,    5,    5,    5,    1,    5,
@@ -514,14 +514,15 @@ char *yytext;
     #include <stdio.h>
     #include "tablas.h"
 
-    int clase, cont_par, contador_global, cont_const_num, cont_identidad, cont_cadena;
+    int clase, cont_par, contador_global, cont_const_num, cont_identidad, cont_cadena, cont_errores;
     T_simbolos *TABLA_SIMBOLOS;
     T_identity *TABLA_IDENTIDADES;
     T_const_num *TABLA_CONSTANTES;
     T_cadenas *TABLA_CADENAS;
+    FILE *archivoError;
     char *datos;
-    int inicio, aux;
-#line 525 "lex.yy.c"
+    int inicio, aux, renglones=1;
+#line 526 "lex.yy.c"
 /* Expresiones regulares */
 /* Expresiones para letras */
 /* Expresiones para numeros */
@@ -535,7 +536,7 @@ char *yytext;
 /* Operadores aritméticos */
 /* Operadores relacionales */
 /* Operador de asignación */
-#line 539 "lex.yy.c"
+#line 540 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -752,9 +753,9 @@ YY_DECL
 		}
 
 	{
-#line 63 "Sintactico.l"
+#line 64 "Sintactico.l"
 
-#line 758 "lex.yy.c"
+#line 759 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -813,7 +814,7 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 64 "Sintactico.l"
+#line 65 "Sintactico.l"
 {printf("Palabra reservada\n");                                             //se imprime que se encontro palabra reservada
                     clase=0;                                                                //definimos la clase en 0 ya que es el primero de la tabla
                     datos=yytext;                                                           //agregamos la produccion encontrada a otro puntero para compararla y agregarla a los tokens
@@ -826,7 +827,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 73 "Sintactico.l"
+#line 74 "Sintactico.l"
 {printf("es un identificador\n");                                         //se imrprime identificador si es que la produccion conincide con tal
                     clase=1;                                                                //asignamos a la clase el valor de 1
                     datos=yytext;                                                           //le agregamos al puntero cadena el texto que conincide con la regla de produccion
@@ -840,7 +841,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 84 "Sintactico.l"
+#line 85 "Sintactico.l"
 {printf("Entero\n");                                                       //se imrprime Entero cuando encuentre la cadena que coincida con la regla de produccion
             clase=2;                                                                    //se define la clase en 2
             datos=yytext;                                                               //se almacena en el puntero de tipo caracter la concidencia que encontro la regla de produccion
@@ -852,7 +853,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 93 "Sintactico.l"
+#line 94 "Sintactico.l"
 { printf("Es un real\n");                                                                    //se imprime real si encuentra una coincidencia en la regla de produccion
             clase = 3;                                                                              //se agrega el valor de 3 a la clase
             datos = yytext;                                                                         //se agrega al puntero caracter la coincidencia de la regla de produccion
@@ -870,7 +871,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 108 "Sintactico.l"
+#line 109 "Sintactico.l"
 {printf("Es una cadena\n");                                                            //se imrprime cadena si es que la regla de produccion encuentra una coincidencia
             clase=4;                                                                            //se asgina el valor de 4 a la clase
             datos=yytext;                                                                       //se agrega al puntero caracter la cadena que coincidio con la regla de produccion
@@ -887,7 +888,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 122 "Sintactico.l"
+#line 123 "Sintactico.l"
 {printf("Simbolo especial\n");                                                 //se imprime el simbolo especial si se encuentra un coincidencia
                     clase=5;                                                                    //se agrega el valor de 5
                     datos=yytext;                                                               //se agrega al puntero caracter el la palabra que coincidio con la regla de produccion
@@ -900,7 +901,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 132 "Sintactico.l"
+#line 133 "Sintactico.l"
 {printf("Op aritmetico\n");                                                     //se imprimer Op aritmetico cuando se encuentra una coincidencia con la regla de produccion
                     clase=6;                                                                    //se asigna el valor de 6 a la clase   
                     datos=yytext;                                                               //se asigna al puntero char, la coincidencia, en esta caso el operador encontrando
@@ -912,7 +913,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 141 "Sintactico.l"
+#line 142 "Sintactico.l"
 {printf("Op relacional\n");                                                     //se imprimer Op relacional si se encuentra una coincidencia
                     clase=7;                                                                    //se agrega el valor de 7 a la clase
                     datos=yytext;                                                               //se agrega al puntero la coincidencia, en este caso el operador
@@ -924,7 +925,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 150 "Sintactico.l"
+#line 151 "Sintactico.l"
 {printf("Asignacion\n");                                                           //se imprime asignacion si encuentra alguna coincidencia que es =
                     clase=8;                                                                    //se agrega el valor de 8 a la clase
                     datos=yytext;                                                               //se agrega al puntero caracter el caracter =
@@ -935,16 +936,32 @@ YY_RULE_SETUP
              } //8
 	YY_BREAK
 case 10:
+/* rule 10 can match eol */
 YY_RULE_SETUP
 #line 159 "Sintactico.l"
-{printf("Error\n");}
+{renglones++;}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 160 "Sintactico.l"
+#line 161 "Sintactico.l"
+{ cont_errores++;
+    archivoError=fopen("ERRORES.txt","a"); //se abre el archivo en modo escritura
+    if (archivoError != NULL) {
+        datos = "Error";
+        fprintf(archivoError, "%s %d, en el renglon %d\n", datos, cont_errores, renglones);  // Escribe la cadena en el archivo
+        printf("Error se ha escrito en el archivo.\n"); //Imprime error si es que no hay coincidencia con alguna de las producciones anteriores
+        fclose(archivoError);  // Cierra el archivo después de escribir
+    } else {
+        printf("No se pudo abrir el archivo.\n"); 
+    }
+}
+	YY_BREAK
+case 12:
+YY_RULE_SETUP
+#line 173 "Sintactico.l"
 ECHO;
 	YY_BREAK
-#line 948 "lex.yy.c"
+#line 965 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1949,12 +1966,11 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 160 "Sintactico.l"
+#line 173 "Sintactico.l"
 
 
 
 int main(int argc, char *argv[]) {
-
     //se crean las tablas con memoria dinamica
     TABLA_SIMBOLOS=malloc(sizeof(T_simbolos));
     TABLA_IDENTIDADES=malloc(sizeof(T_identity));
