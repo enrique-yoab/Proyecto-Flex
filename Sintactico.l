@@ -147,13 +147,13 @@ Asignacion (\=)
                     contador_global++;                                                          //se incrementa el contador de llaves global
                 } //7
 
-{Asignacion} {printf("Asignacion\n");
-                    clase=8;
-                    datos=yytext;
-                    TOKEN *llave=malloc(sizeof(TOKEN));
-                    ADD_VALUE_TOKEN(llave, clase, contador_global, datos, contador_global);
-                    ADD_VALUE_SIMBOLOS(TABLA_SIMBOLOS, llave, contador_global);
-                    contador_global++;   
+{Asignacion} {printf("Asignacion\n");                                                           //se imprime asignacion si encuentra alguna coincidencia que es =
+                    clase=8;                                                                    //se agrega el valor de 8 a la clase
+                    datos=yytext;                                                               //se agrega al puntero caracter el caracter =
+                    TOKEN *llave=malloc(sizeof(TOKEN));                                         //se crea el token con memoria dinamica
+                    ADD_VALUE_TOKEN(llave, clase, contador_global, datos, contador_global);     //se asgina al token los valores de la clase y su posicion, junto con su dato
+                    ADD_VALUE_SIMBOLOS(TABLA_SIMBOLOS, llave, contador_global);                 //se agrega a la tabla de simbolos
+                    contador_global++;                                                          //se incrementa el valor de las llave global
              } //8
 
 . {printf("Error\n");}
@@ -161,6 +161,8 @@ Asignacion (\=)
 
 
 int main(int argc, char *argv[]) {
+
+    //se crean las tablas con memoria dinamica
     TABLA_SIMBOLOS=malloc(sizeof(T_simbolos));
     TABLA_IDENTIDADES=malloc(sizeof(T_identity));
     TABLA_CONSTANTES=malloc(sizeof(T_const_num));
