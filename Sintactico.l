@@ -156,7 +156,7 @@ Asignacion (\=)
                     contador_global++;                                                          //se incrementa el valor de las llave global
              } //8
 
-. {printf("Error\n");}
+. {printf("Error\n");}          //Imprime error si es que no hay coincidencia con alguna de las producciones anteriores
 %%
 
 
