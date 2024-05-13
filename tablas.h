@@ -8,6 +8,17 @@ typedef struct{
     int posicion;
     char dato[30];
 } TOKEN;
+/// @brief 
+typedef struct{
+    char *dato;
+    char *name;
+    int valor; //valor de la clase específica (caso de tablas)
+    int id; //clase
+} ATOMOS; //Generamos una estructura para almacenar los átomos 
+
+typedef struct{
+    ATOMOS atomos[MAX_TOKEN];
+}T_atomos;
 
 typedef struct{
     TOKEN tokens[MAX_TOKEN];
@@ -37,5 +48,11 @@ void printSimbolos(T_simbolos *Tabla_simbolos,int contador);
 void printIdentity(T_identity *Tabla_identidad, int contador);
 void printConstante(T_const_num *Tabla_constante, int contador);
 void printCadenas(T_cadenas *Tabla_cadena, int contador);
+
+//Nuevas funciones
+void generate_atom(T_simbolos *sim, T_atomos *tabla_atomos, int i, ATOMOS *atm);
+void ADD_ATOM(T_atomos *tabla_atomos, int clase, char *val_atom, char * dato, int contador, ATOMOS *atom);
+void ATOM_VALUE(T_atomos *tabla_atomos, int clase, char *dato, int contador, ATOMOS *atom);
+void printAtomos(T_atomos *atomos, int contador);
 
 #endif

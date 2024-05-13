@@ -1,13 +1,14 @@
 #include "tablas.h"
 #include <string.h>
+#include <stdlib.h>
 #include <stdio.h>
 
 /* se crea la funcion que agregara los valores al token
 *  recibira un token, la clase, el valor y la cadena que contendra, junto con su posicion en la tabla de simbolos
 */
 void ADD_VALUE_TOKEN(TOKEN *llave, int class, char value, const char* cadena, int posicion) {
-    int encontrado=0,i=0;                           //se crea una variable auxiliar que servira como bandera para el while
-    char *valores[17]={"case","long","if","else","double","while","do","int","default","float","for","switch","short","continue","break","char","return"}; //el arreglo contendra las palabras reservadas
+    int encontrado=0,i=0;                           //se crea una variable iiliar que servira como bandera para el while
+    char *valores[17]={"alternative","big","evaluate","instead","large","loop","make","number","other","real","repeat","select","small","step","stop","symbol","throw"}; //el arreglo contendra las palabras reservadas
     char *relacional[6]={"<",">","<=",">=","==","!="};  //el arreglo contendra los operadores relacionales
     
     // el if es para saber de que clase es para reutilizar la funcion en varias producciones
@@ -111,3 +112,137 @@ void printCadenas(T_cadenas *Tabla_cadena, int contador){
     }
 };
 //fin de las funciones que imprimen las tablas
+void ATOM_VALUE(T_atomos *tabla_atomos, int clase, char *dato, int contador, ATOMOS *atom){
+    char *pal_reservadas [17] = {"alternative", "big", "evaluate", "instead", "large", "loop", "make", "number", "other", "real", "repeat", "select", "small", "step", "stop", "symbol", "throw"};
+    char *atom_pr [17] = {"a", "b", "f", "t", "g", "w", "m", "#", "o", "x", "j", "h", "p", "c", "q", "y", "z"};
+    char *op_rel [6] = {"<", ">", "<=", ">=", "==", "!="};
+    char *atom_op_r [6] = {"<", ">", "i", "u", "e", "d"};
+    
+    //Palabras reservadas
+    if (clase == 0){
+        for (int i = 0; i <= 16; i++){
+            if (strcmp(dato, pal_reservadas[i]) == 0){
+                atom->id = clase;
+                atom->valor = i;
+                atom->name = atom_pr[i];
+                atom->dato = dato;
+            }
+        }
+    }else if(clase == 5){ 
+        //Simbolos especiales
+        atom->id = clase;
+        atom->valor = clase;
+        atom->name = dato;
+        atom->dato = dato;
+    }else if(clase == 6){
+        //Operadores aritmeticos
+        atom->id = clase;
+        atom->valor = clase;
+        atom->name = dato;
+        atom->dato = dato;
+    }else if (clase == 7){//Opreadores relacionales
+        for (int i = 0; i <= 5; i++){
+            if(strcmp(dato, op_rel[i]) == 0){
+                atom->id = clase;
+                atom->valor = i;
+                atom->name = atom_op_r[i];
+                atom->dato = dato;
+            }
+        }
+    }
+    tabla_atomos->atomos[contador] = *atom;
+
+}
+
+//Funcion para agregar atomos a la tabla de atomos
+
+void ADD_ATOM(T_atomos *tabla_atomos, int clase, char *val_atom, char * dato, int i, ATOMOS *atom){
+    printf("Pas 0\n");
+    //ATOMOS *atom=malloc(sizeof(ATOMOS));
+    printf("Pas 1\n");
+    atom->id = clase;
+    printf("Pas 2\n");
+    atom->valor = clase;
+    printf("Pas 3\n");
+    atom->name = val_atom;
+    printf("Pas 4\n");
+    atom->dato = dato;
+    printf("Pas 5\n");
+    tabla_atomos->atomos[i] = *atom;
+    printf("Pas 6\n");
+
+}
+
+
+//Función para los átomos
+void generate_atom(T_simbolos *sim ,T_atomos *tabla_atomos, int  i, ATOMOS *atom){
+    
+    printf("Entre a generar atomos\n");
+    printf("%d\n", sim->tokens[i].clase);
+    switch (sim->tokens[i].clase)
+    {
+        //caso para palabras reservadas
+        case 0:
+            printf("Caso 0");
+            ATOM_VALUE(tabla_atomos, sim->tokens[i].clase, sim->tokens[i].dato, i, atom);
+            printf("0\n");
+        break;
+        //Caso para identificadores
+        case 1:
+            printf("Caso 1");
+            ADD_ATOM(tabla_atomos, sim->tokens[i].clase, "i", sim->tokens[i].dato, i, atom);
+            printf("1\n");
+        break;
+        //Caso para enteros
+        case 2:
+            printf("Caso 2");
+            ADD_ATOM(tabla_atomos, sim->tokens[i].clase, "n", sim->tokens[i].dato, i, atom);
+            printf("2\n");
+        break;
+        //Caso para las reales
+        case 3:
+            printf("Caso 3");
+            ADD_ATOM(tabla_atomos, sim->tokens[i].clase, "r", sim->tokens[i].dato, i, atom);
+            printf("3\n");
+        break;
+        //Caso para cadenas
+        case 4:
+            printf("Caso 4");
+            ADD_ATOM(tabla_atomos, sim->tokens[i].clase, "s", sim->tokens[i].dato, i, atom);
+            printf("4\n");
+        break;
+        //Caso para sim especiales
+        case 5:
+            printf("Caso 5");
+            ATOM_VALUE(tabla_atomos, sim->tokens[i].clase, sim->tokens[i].dato, i, atom);
+            printf("5\n");
+        break;
+        //Caso para 
+        case 6:
+            printf("Caso 6");
+            ATOM_VALUE(tabla_atomos, sim->tokens[i].clase, sim->tokens[i].dato, i, atom);
+            printf("6\n");
+        break;
+        case 7:
+            printf("Caso 7");
+            ATOM_VALUE(tabla_atomos, sim->tokens[i].clase, sim->tokens[i].dato, i, atom);
+            printf("7\n");
+        break;
+        case 8:
+            printf("Caso 8");
+            ADD_ATOM(tabla_atomos, sim->tokens[i].clase, "=", sim->tokens[i].dato, i, atom);
+            printf("8\n");
+        break;
+        default:
+            printf("Error\n");
+        break;
+
+    }
+}
+
+void printAtomos(T_atomos *atomos, int contador){
+    printf("\n------------------TABLA DE ATOMOS------------------\n");
+    for (int i = 0; i <= contador; i++){
+        printf("Clase: %d, Valor: %d, Atomo: %s, Token asociado: %s\n", atomos->atomos[i].id, atomos->atomos[i].valor, atomos->atomos[i].name, atomos->atomos[i].dato);
+    }
+}

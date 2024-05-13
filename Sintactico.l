@@ -7,6 +7,7 @@
     T_identity *TABLA_IDENTIDADES;
     T_const_num *TABLA_CONSTANTES;
     T_cadenas *TABLA_CADENAS;
+    T_atomos *TABLA_ATOMOS;
     FILE *archivoError;
     char *datos;
     int inicio, aux, renglones=1;
@@ -27,7 +28,7 @@ OCT [0-7]
 
 /* Palabras reservadas */
 
-Pal_reservada (case|long|if|else|double|while|do|int|default|float|for|switch|short|continue|break|char|return)
+Pal_reservada (alternative|big|evaluate|instead|large|loop|make|number|other|real|repet|select|small|step|stop|symbol|throw)
 
 /* Identificadores */
 
@@ -68,8 +69,8 @@ Asignacion (\=)
                     TOKEN *llave=malloc(sizeof(TOKEN));                                     //creamos el token con memoria dinamica 
                     ADD_VALUE_TOKEN(llave, clase, cont_par, datos, contador_global);        //agregamos los valores que llevara el tokek, en esta caso su clase, el valor y la cadena reconocida, junto con su posicion
                     ADD_VALUE_SIMBOLOS(TABLA_SIMBOLOS, llave, contador_global);             //agregamos el token a la tabla de simbolos, con su correspondiente posicion\
-                    cont_par++;                                                             //incrementamos la variable que es el indice del arreglo o las palabras reservadas que se van encontrando
-                    contador_global++;                                                      //incrementamos el contador de las llaves global
+                    cont_par++;                                                              //incrementamos la variable que es el indice del arreglo o las palabras reservadas que se van encontrando
+                    contador_global++;                                                      //incrementamos el contador de las llaves globalzz
                 } //0
 {Identificadores} {printf("es un identificador\n");                                         //se imrprime identificador si es que la produccion conincide con tal
                     clase=1;                                                                //asignamos a la clase el valor de 1
@@ -179,6 +180,7 @@ int main(int argc, char *argv[]) {
     TABLA_IDENTIDADES=malloc(sizeof(T_identity));
     TABLA_CONSTANTES=malloc(sizeof(T_const_num));
     TABLA_CADENAS=malloc(sizeof(T_cadenas));
+    TABLA_ATOMOS=malloc(sizeof(T_atomos));
 
     if (argc < 2) {
         printf("Uso: %s archivo_de_entrada\n", argv[0]);
@@ -198,12 +200,19 @@ int main(int argc, char *argv[]) {
     printIdentity(TABLA_IDENTIDADES, cont_identidad);
     printConstante(TABLA_CONSTANTES, cont_const_num);
     printCadenas(TABLA_CADENAS, cont_cadena);
+    ATOMOS *atom=malloc(sizeof(ATOMOS));
+    for (int i = 0; i<= contador_global; i++){
+        printf("%s\n", TABLA_SIMBOLOS->tokens[i].dato);
+        generate_atom(TABLA_SIMBOLOS, TABLA_ATOMOS, i, atom);
+    }
+    printAtomos(TABLA_ATOMOS, contador_global);
+
     free(TABLA_CADENAS);
     free(TABLA_CONSTANTES);
     free(TABLA_IDENTIDADES);
     free(TABLA_SIMBOLOS);
     
     fclose(archivo);
-    yylex_destroy();
+    //yylex_destroy();
     return 0;
 }

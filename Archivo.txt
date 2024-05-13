@@ -1,18 +1,12 @@
-if
-else
-$var2
-$var3
-0.1
->
-0.1
-0.1
-'c'
-"perro"
+
 int main() {
     int $num1, $num2, suma;
-    suma = $num1 + $num2;
+    $num ++;
+    suma = $num1 - $num2 * 10 / 5;
     printf("La suma de %d y %d es: %d\n", $num1, $num2, suma);
+    suma <= $num1;
     return 0;
+
 }
 'c'
 "perro"
