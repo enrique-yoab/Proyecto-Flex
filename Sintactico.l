@@ -10,7 +10,7 @@
     T_atomos *TABLA_ATOMOS;
     FILE *archivoError;
     char *datos;
-    int inicio, aux, renglones=1;
+    int inicio, aux, linea,renglones=1;
 %}
 
 /* Expresiones regulares */
@@ -62,21 +62,23 @@ Op_relacional (<|>|<=|>=|==|!=)
 /* Operador de asignación */
 
 Asignacion (\=)
+
+%option yylineno
 %%
 {Pal_reservada} {printf("Palabra reservada\n");                                             //se imprime que se encontro palabra reservada
                     clase=0;                                                                //definimos la clase en 0 ya que es el primero de la tabla
                     datos=yytext;                                                           //agregamos la produccion encontrada a otro puntero para compararla y agregarla a los tokens
                     TOKEN *llave=malloc(sizeof(TOKEN));                                     //creamos el token con memoria dinamica 
-                    ADD_VALUE_TOKEN(llave, clase, cont_par, datos, contador_global);        //agregamos los valores que llevara el tokek, en esta caso su clase, el valor y la cadena reconocida, junto con su posicion
-                    ADD_VALUE_SIMBOLOS(TABLA_SIMBOLOS, llave, contador_global);             //agregamos el token a la tabla de simbolos, con su correspondiente posicion\
-                    cont_par++;                                                              //incrementamos la variable que es el indice del arreglo o las palabras reservadas que se van encontrando
+                    ADD_VALUE_TOKEN(llave, clase, cont_par, datos, contador_global, yylineno);        //agregamos los valores que llevara el tokek, en esta caso su clase, el valor y la cadena reconocida, junto con su posicion
+                    ADD_VALUE_SIMBOLOS(TABLA_SIMBOLOS, llave, contador_global);             //agregamos el token a la tabla de simbolos, con su correspondiente posicion
+                    cont_par++;                                                            //incrementamos la variable que es el indice del arreglo o las palabras reservadas que se van encontrando
                     contador_global++;                                                      //incrementamos el contador de las llaves globalzz
                 } //0
 {Identificadores} {printf("es un identificador\n");                                         //se imrprime identificador si es que la produccion conincide con tal
                     clase=1;                                                                //asignamos a la clase el valor de 1
                     datos=yytext;                                                           //le agregamos al puntero cadena el texto que conincide con la regla de produccion
                     TOKEN *llave=malloc(sizeof(TOKEN));                                     //creamos el token con memoria dinamica
-                    ADD_VALUE_TOKEN(llave, clase, contador_global, datos, contador_global); //se le agregan los valores al token
+                    ADD_VALUE_TOKEN(llave, clase, contador_global, datos, contador_global, yylineno); //se le agregan los valores al token
                     ADD_VALUE_SIMBOLOS(TABLA_SIMBOLOS, llave, contador_global);             //agregamos el token a la tabla de simbolos
                     ADD_VALUE_IDENTITY(TABLA_IDENTIDADES, llave, cont_identidad);           //agregamos ahora el token a la tabla de cont_identidad porque es un token identificador
                     cont_identidad++;                                                       //incrementamos el contador de Identificadores 
@@ -87,7 +89,7 @@ Asignacion (\=)
             clase=2;                                                                    //se define la clase en 2
             datos=yytext;                                                               //se almacena en el puntero de tipo caracter la concidencia que encontro la regla de produccion
             TOKEN *llave=malloc(sizeof(TOKEN));                                         //se crea el token con memoria dinamica
-            ADD_VALUE_TOKEN(llave, clase, contador_global, datos, contador_global);     //se agrega los valores del token que en esta caso es la posicion en la tabla y la clase
+            ADD_VALUE_TOKEN(llave, clase, contador_global, datos, contador_global,yylineno);     //se agrega los valores del token que en esta caso es la posicion en la tabla y la clase
             ADD_VALUE_SIMBOLOS(TABLA_SIMBOLOS, llave, contador_global);                 //se agrega el token a la tabla de simbolos
             contador_global++;                                                          //se incrementa el contador global de las llaves
           } //2
@@ -96,7 +98,7 @@ Asignacion (\=)
             clase = 3;                                                                              //se agrega el valor de 3 a la clase
             datos = yytext;                                                                         //se agrega al puntero caracter la coincidencia de la regla de produccion
             TOKEN *llave = malloc(sizeof(TOKEN));                                                   //se crea el token con memoria dinamica
-            ADD_VALUE_TOKEN(llave, clase, cont_const_num, datos, contador_global);                  // se agregan los valores al token que es su posicion en la tabla constante y la posicion, junto con su clase
+            ADD_VALUE_TOKEN(llave, clase, cont_const_num, datos, contador_global, yylineno);                  // se agregan los valores al token que es su posicion en la tabla constante y la posicion, junto con su clase
             ADD_VALUE_SIMBOLOS(TABLA_SIMBOLOS, llave, contador_global);                             //se agrega el token creado a la tabla de simbolos
             if (inicio == 0 || repetido(TABLA_CONSTANTES, datos, cont_const_num) == 0) {            //se agrega el primer valor a la tabla de constantes y si se repite no entra al if por lo que no se agrega a la tabla
                 // Si es el primer valor o no está repetido, se agrega a la lista de constantes     //de constantes numericas
@@ -111,13 +113,13 @@ Asignacion (\=)
             clase=4;                                                                            //se asgina el valor de 4 a la clase
             datos=yytext;                                                                       //se agrega al puntero caracter la cadena que coincidio con la regla de produccion
             TOKEN *llave=malloc(sizeof(TOKEN));                                                 //se crea el token con memoria dinamica
-            ADD_VALUE_TOKEN(llave, clase, contador_global, datos, contador_global);             //se agrega los valores del token que es su clase, su valor el cual es la posicion en su tablas y la palabra
+            ADD_VALUE_TOKEN(llave, clase, contador_global, datos, contador_global, yylineno);             //se agrega los valores del token que es su clase, su valor el cual es la posicion en su tablas y la palabra
             ADD_VALUE_SIMBOLOS(TABLA_SIMBOLOS,llave,contador_global);                           //se agrega el token a la tabla de simbolos
             if(aux==0 || repetidoC(TABLA_CADENAS,datos,cont_cadena)==0){                        //se verifica agrega la llave a la tabla cadena si es el primero y si no esta repetido
                 ADD_VALUE_CADENAS(TABLA_CADENAS, llave, cont_cadena);                           //se agrega el token a la tabla de cadena
                 aux++;                                                                          //se incrementa el aux ya que no sera el primero, y solo se verifica si se repite
                 cont_cadena++;                                                                  //se incrementa el contador de cadenas que es la posicion en su tabla.
-            }   
+            }
             contador_global++;                                                                  //se incrementa el contador de llaves global
          } //4
 
@@ -126,7 +128,7 @@ Asignacion (\=)
                     datos=yytext;                                                               //se agrega al puntero caracter el la palabra que coincidio con la regla de produccion
                     TOKEN *llave=malloc(sizeof(TOKEN));                                         //se crea el token con memoria dinamica
                     int ASCII= (int)*datos;                                                     //se hace un cast al puntero caracter para que nos de el valor en ASCII
-                    ADD_VALUE_TOKEN(llave, clase, ASCII, datos, contador_global);               //se agrega el token su clase y el valor de ASCII, junto con el simbolo y su posicion
+                    ADD_VALUE_TOKEN(llave, clase, ASCII, datos, contador_global,yylineno);               //se agrega el token su clase y el valor de ASCII, junto con el simbolo y su posicion
                     ADD_VALUE_SIMBOLOS(TABLA_SIMBOLOS, llave, contador_global);                 //se agrega el token a la tabla de simbolos
                     contador_global++;                                                          //se incrementael contador de llaves global
                 } //5
@@ -135,7 +137,7 @@ Asignacion (\=)
                     clase=6;                                                                    //se asigna el valor de 6 a la clase   
                     datos=yytext;                                                               //se asigna al puntero char, la coincidencia, en esta caso el operador encontrando
                     TOKEN *llave=malloc(sizeof(TOKEN));                                         //se crea el token con memoria dinamica
-                    ADD_VALUE_TOKEN(llave, clase, contador_global, datos, contador_global);     //se agrega al token la clase y el valor en la posicion de la tabla
+                    ADD_VALUE_TOKEN(llave, clase, contador_global, datos, contador_global,yylineno);     //se agrega al token la clase y el valor en la posicion de la tabla
                     ADD_VALUE_SIMBOLOS(TABLA_SIMBOLOS, llave, contador_global);                 //se agrega a la tabla de simbolos
                     contador_global++;                                                          //se incrementa el valor de las llaves global
                 } //6
@@ -144,7 +146,7 @@ Asignacion (\=)
                     clase=7;                                                                    //se agrega el valor de 7 a la clase
                     datos=yytext;                                                               //se agrega al puntero la coincidencia, en este caso el operador
                     TOKEN *llave=malloc(sizeof(TOKEN));                                         //se crea el token con memoria dinamica
-                    ADD_VALUE_TOKEN(llave, clase, contador_global, datos, contador_global);     //se agrega los valores al token creado, que es su clase y la posicion del operador de su respectiva tabla
+                    ADD_VALUE_TOKEN(llave, clase, contador_global, datos, contador_global,yylineno);     //se agrega los valores al token creado, que es su clase y la posicion del operador de su respectiva tabla
                     ADD_VALUE_SIMBOLOS(TABLA_SIMBOLOS, llave, contador_global);                 //se agrega el token a la tabla de simbolos con su posicion
                     contador_global++;                                                          //se incrementa el contador de llaves global
                 } //7
@@ -153,7 +155,7 @@ Asignacion (\=)
                     clase=8;                                                                    //se agrega el valor de 8 a la clase
                     datos=yytext;                                                               //se agrega al puntero caracter el caracter =
                     TOKEN *llave=malloc(sizeof(TOKEN));                                         //se crea el token con memoria dinamica
-                    ADD_VALUE_TOKEN(llave, clase, contador_global, datos, contador_global);     //se asgina al token los valores de la clase y su posicion, junto con su dato
+                    ADD_VALUE_TOKEN(llave, clase, contador_global, datos, contador_global,yylineno);     //se asgina al token los valores de la clase y su posicion, junto con su dato
                     ADD_VALUE_SIMBOLOS(TABLA_SIMBOLOS, llave, contador_global);                 //se agrega a la tabla de simbolos
                     contador_global++;                                                          //se incrementa el valor de las llave global
              } //8
@@ -202,8 +204,8 @@ int main(int argc, char *argv[]) {
     printCadenas(TABLA_CADENAS, cont_cadena);
     ATOMOS *atom=malloc(sizeof(ATOMOS));
     for (int i = 0; i<= contador_global; i++){
-        printf("%s\n", TABLA_SIMBOLOS->tokens[i].dato);
         generate_atom(TABLA_SIMBOLOS, TABLA_ATOMOS, i, atom);
+        
     }
     printAtomos(TABLA_ATOMOS, contador_global);
 

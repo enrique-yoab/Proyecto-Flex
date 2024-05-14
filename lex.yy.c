@@ -162,8 +162,27 @@ extern FILE *yyin, *yyout;
 #define EOB_ACT_END_OF_FILE 1
 #define EOB_ACT_LAST_MATCH 2
     
-    #define YY_LESS_LINENO(n)
-    #define YY_LINENO_REWIND_TO(ptr)
+    /* Note: We specifically omit the test for yy_rule_can_match_eol because it requires
+     *       access to the local variable yy_act. Since yyless() is a macro, it would break
+     *       existing scanners that call yyless() from OUTSIDE yylex.
+     *       One obvious solution it to make yy_act a global. I tried that, and saw
+     *       a 5% performance hit in a non-yylineno scanner, because yy_act is
+     *       normally declared as a register variable-- so it is not worth it.
+     */
+    #define  YY_LESS_LINENO(n) \
+            do { \
+                int yyl;\
+                for ( yyl = n; yyl < yyleng; ++yyl )\
+                    if ( yytext[yyl] == '\n' )\
+                        --yylineno;\
+            }while(0)
+    #define YY_LINENO_REWIND_TO(dst) \
+            do {\
+                const char *p;\
+                for ( p = yy_cp-1; p >= (dst); --p)\
+                    if ( *p == '\n' )\
+                        --yylineno;\
+            }while(0)
     
 /* Return all but the first "n" matched characters back to the input stream. */
 #define yyless(n) \
@@ -504,6 +523,11 @@ static const flex_int16_t yy_chk[217] =
       102,  102,  102,  102,  102,  102
     } ;
 
+/* Table of booleans, true if rule could match eol. */
+static const flex_int32_t yy_rule_can_match_eol[13] =
+    {   0,
+0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0,     };
+
 static yy_state_type yy_last_accepting_state;
 static char *yy_last_accepting_cpos;
 
@@ -531,8 +555,8 @@ char *yytext;
     T_atomos *TABLA_ATOMOS;
     FILE *archivoError;
     char *datos;
-    int inicio, aux, renglones=1;
-#line 536 "lex.yy.c"
+    int inicio, aux, linea,renglones=1;
+#line 560 "lex.yy.c"
 /* Expresiones regulares */
 /* Expresiones para letras */
 /* Expresiones para numeros */
@@ -546,7 +570,7 @@ char *yytext;
 /* Operadores aritméticos */
 /* Operadores relacionales */
 /* Operador de asignación */
-#line 550 "lex.yy.c"
+#line 574 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -763,9 +787,9 @@ YY_DECL
 		}
 
 	{
-#line 65 "Sintactico.l"
+#line 67 "Sintactico.l"
 
-#line 769 "lex.yy.c"
+#line 793 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -811,6 +835,16 @@ yy_find_action:
 
 		YY_DO_BEFORE_ACTION;
 
+		if ( yy_act != YY_END_OF_BUFFER && yy_rule_can_match_eol[yy_act] )
+			{
+			int yyl;
+			for ( yyl = 0; yyl < yyleng; ++yyl )
+				if ( yytext[yyl] == '\n' )
+					
+    yylineno++;
+;
+			}
+
 do_action:	/* This label is used only to access EOF actions. */
 
 		switch ( yy_act )
@@ -824,25 +858,25 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 66 "Sintactico.l"
+#line 68 "Sintactico.l"
 {printf("Palabra reservada\n");                                             //se imprime que se encontro palabra reservada
                     clase=0;                                                                //definimos la clase en 0 ya que es el primero de la tabla
                     datos=yytext;                                                           //agregamos la produccion encontrada a otro puntero para compararla y agregarla a los tokens
                     TOKEN *llave=malloc(sizeof(TOKEN));                                     //creamos el token con memoria dinamica 
-                    ADD_VALUE_TOKEN(llave, clase, cont_par, datos, contador_global);        //agregamos los valores que llevara el tokek, en esta caso su clase, el valor y la cadena reconocida, junto con su posicion
-                    ADD_VALUE_SIMBOLOS(TABLA_SIMBOLOS, llave, contador_global);             //agregamos el token a la tabla de simbolos, con su correspondiente posicion\
-                    cont_par++;                                                              //incrementamos la variable que es el indice del arreglo o las palabras reservadas que se van encontrando
+                    ADD_VALUE_TOKEN(llave, clase, cont_par, datos, contador_global, yylineno);        //agregamos los valores que llevara el tokek, en esta caso su clase, el valor y la cadena reconocida, junto con su posicion
+                    ADD_VALUE_SIMBOLOS(TABLA_SIMBOLOS, llave, contador_global);             //agregamos el token a la tabla de simbolos, con su correspondiente posicion
+                    cont_par++;                                                            //incrementamos la variable que es el indice del arreglo o las palabras reservadas que se van encontrando
                     contador_global++;                                                      //incrementamos el contador de las llaves globalzz
                 } //0
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 75 "Sintactico.l"
+#line 77 "Sintactico.l"
 {printf("es un identificador\n");                                         //se imrprime identificador si es que la produccion conincide con tal
                     clase=1;                                                                //asignamos a la clase el valor de 1
                     datos=yytext;                                                           //le agregamos al puntero cadena el texto que conincide con la regla de produccion
                     TOKEN *llave=malloc(sizeof(TOKEN));                                     //creamos el token con memoria dinamica
-                    ADD_VALUE_TOKEN(llave, clase, contador_global, datos, contador_global); //se le agregan los valores al token
+                    ADD_VALUE_TOKEN(llave, clase, contador_global, datos, contador_global, yylineno); //se le agregan los valores al token
                     ADD_VALUE_SIMBOLOS(TABLA_SIMBOLOS, llave, contador_global);             //agregamos el token a la tabla de simbolos
                     ADD_VALUE_IDENTITY(TABLA_IDENTIDADES, llave, cont_identidad);           //agregamos ahora el token a la tabla de cont_identidad porque es un token identificador
                     cont_identidad++;                                                       //incrementamos el contador de Identificadores 
@@ -851,24 +885,24 @@ YY_RULE_SETUP
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 86 "Sintactico.l"
+#line 88 "Sintactico.l"
 {printf("Entero\n");                                                       //se imrprime Entero cuando encuentre la cadena que coincida con la regla de produccion
             clase=2;                                                                    //se define la clase en 2
             datos=yytext;                                                               //se almacena en el puntero de tipo caracter la concidencia que encontro la regla de produccion
             TOKEN *llave=malloc(sizeof(TOKEN));                                         //se crea el token con memoria dinamica
-            ADD_VALUE_TOKEN(llave, clase, contador_global, datos, contador_global);     //se agrega los valores del token que en esta caso es la posicion en la tabla y la clase
+            ADD_VALUE_TOKEN(llave, clase, contador_global, datos, contador_global,yylineno);     //se agrega los valores del token que en esta caso es la posicion en la tabla y la clase
             ADD_VALUE_SIMBOLOS(TABLA_SIMBOLOS, llave, contador_global);                 //se agrega el token a la tabla de simbolos
             contador_global++;                                                          //se incrementa el contador global de las llaves
           } //2
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 95 "Sintactico.l"
+#line 97 "Sintactico.l"
 { printf("Es un real\n");                                                                    //se imprime real si encuentra una coincidencia en la regla de produccion
             clase = 3;                                                                              //se agrega el valor de 3 a la clase
             datos = yytext;                                                                         //se agrega al puntero caracter la coincidencia de la regla de produccion
             TOKEN *llave = malloc(sizeof(TOKEN));                                                   //se crea el token con memoria dinamica
-            ADD_VALUE_TOKEN(llave, clase, cont_const_num, datos, contador_global);                  // se agregan los valores al token que es su posicion en la tabla constante y la posicion, junto con su clase
+            ADD_VALUE_TOKEN(llave, clase, cont_const_num, datos, contador_global, yylineno);                  // se agregan los valores al token que es su posicion en la tabla constante y la posicion, junto con su clase
             ADD_VALUE_SIMBOLOS(TABLA_SIMBOLOS, llave, contador_global);                             //se agrega el token creado a la tabla de simbolos
             if (inicio == 0 || repetido(TABLA_CONSTANTES, datos, cont_const_num) == 0) {            //se agrega el primer valor a la tabla de constantes y si se repite no entra al if por lo que no se agrega a la tabla
                 // Si es el primer valor o no está repetido, se agrega a la lista de constantes     //de constantes numericas
@@ -881,66 +915,66 @@ YY_RULE_SETUP
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 110 "Sintactico.l"
+#line 112 "Sintactico.l"
 {printf("Es una cadena\n");                                                            //se imrprime cadena si es que la regla de produccion encuentra una coincidencia
             clase=4;                                                                            //se asgina el valor de 4 a la clase
             datos=yytext;                                                                       //se agrega al puntero caracter la cadena que coincidio con la regla de produccion
             TOKEN *llave=malloc(sizeof(TOKEN));                                                 //se crea el token con memoria dinamica
-            ADD_VALUE_TOKEN(llave, clase, contador_global, datos, contador_global);             //se agrega los valores del token que es su clase, su valor el cual es la posicion en su tablas y la palabra
+            ADD_VALUE_TOKEN(llave, clase, contador_global, datos, contador_global, yylineno);             //se agrega los valores del token que es su clase, su valor el cual es la posicion en su tablas y la palabra
             ADD_VALUE_SIMBOLOS(TABLA_SIMBOLOS,llave,contador_global);                           //se agrega el token a la tabla de simbolos
             if(aux==0 || repetidoC(TABLA_CADENAS,datos,cont_cadena)==0){                        //se verifica agrega la llave a la tabla cadena si es el primero y si no esta repetido
                 ADD_VALUE_CADENAS(TABLA_CADENAS, llave, cont_cadena);                           //se agrega el token a la tabla de cadena
                 aux++;                                                                          //se incrementa el aux ya que no sera el primero, y solo se verifica si se repite
                 cont_cadena++;                                                                  //se incrementa el contador de cadenas que es la posicion en su tabla.
-            }   
+            }
             contador_global++;                                                                  //se incrementa el contador de llaves global
          } //4
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 124 "Sintactico.l"
+#line 126 "Sintactico.l"
 {printf("Simbolo especial\n");                                                 //se imprime el simbolo especial si se encuentra un coincidencia
                     clase=5;                                                                    //se agrega el valor de 5
                     datos=yytext;                                                               //se agrega al puntero caracter el la palabra que coincidio con la regla de produccion
                     TOKEN *llave=malloc(sizeof(TOKEN));                                         //se crea el token con memoria dinamica
                     int ASCII= (int)*datos;                                                     //se hace un cast al puntero caracter para que nos de el valor en ASCII
-                    ADD_VALUE_TOKEN(llave, clase, ASCII, datos, contador_global);               //se agrega el token su clase y el valor de ASCII, junto con el simbolo y su posicion
+                    ADD_VALUE_TOKEN(llave, clase, ASCII, datos, contador_global,yylineno);               //se agrega el token su clase y el valor de ASCII, junto con el simbolo y su posicion
                     ADD_VALUE_SIMBOLOS(TABLA_SIMBOLOS, llave, contador_global);                 //se agrega el token a la tabla de simbolos
                     contador_global++;                                                          //se incrementael contador de llaves global
                 } //5
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 134 "Sintactico.l"
+#line 136 "Sintactico.l"
 {printf("Op aritmetico\n");                                                     //se imprimer Op aritmetico cuando se encuentra una coincidencia con la regla de produccion
                     clase=6;                                                                    //se asigna el valor de 6 a la clase   
                     datos=yytext;                                                               //se asigna al puntero char, la coincidencia, en esta caso el operador encontrando
                     TOKEN *llave=malloc(sizeof(TOKEN));                                         //se crea el token con memoria dinamica
-                    ADD_VALUE_TOKEN(llave, clase, contador_global, datos, contador_global);     //se agrega al token la clase y el valor en la posicion de la tabla
+                    ADD_VALUE_TOKEN(llave, clase, contador_global, datos, contador_global,yylineno);     //se agrega al token la clase y el valor en la posicion de la tabla
                     ADD_VALUE_SIMBOLOS(TABLA_SIMBOLOS, llave, contador_global);                 //se agrega a la tabla de simbolos
                     contador_global++;                                                          //se incrementa el valor de las llaves global
                 } //6
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 143 "Sintactico.l"
+#line 145 "Sintactico.l"
 {printf("Op relacional\n");                                                     //se imprimer Op relacional si se encuentra una coincidencia
                     clase=7;                                                                    //se agrega el valor de 7 a la clase
                     datos=yytext;                                                               //se agrega al puntero la coincidencia, en este caso el operador
                     TOKEN *llave=malloc(sizeof(TOKEN));                                         //se crea el token con memoria dinamica
-                    ADD_VALUE_TOKEN(llave, clase, contador_global, datos, contador_global);     //se agrega los valores al token creado, que es su clase y la posicion del operador de su respectiva tabla
+                    ADD_VALUE_TOKEN(llave, clase, contador_global, datos, contador_global,yylineno);     //se agrega los valores al token creado, que es su clase y la posicion del operador de su respectiva tabla
                     ADD_VALUE_SIMBOLOS(TABLA_SIMBOLOS, llave, contador_global);                 //se agrega el token a la tabla de simbolos con su posicion
                     contador_global++;                                                          //se incrementa el contador de llaves global
                 } //7
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 152 "Sintactico.l"
+#line 154 "Sintactico.l"
 {printf("Asignacion\n");                                                           //se imprime asignacion si encuentra alguna coincidencia que es =
                     clase=8;                                                                    //se agrega el valor de 8 a la clase
                     datos=yytext;                                                               //se agrega al puntero caracter el caracter =
                     TOKEN *llave=malloc(sizeof(TOKEN));                                         //se crea el token con memoria dinamica
-                    ADD_VALUE_TOKEN(llave, clase, contador_global, datos, contador_global);     //se asgina al token los valores de la clase y su posicion, junto con su dato
+                    ADD_VALUE_TOKEN(llave, clase, contador_global, datos, contador_global,yylineno);     //se asgina al token los valores de la clase y su posicion, junto con su dato
                     ADD_VALUE_SIMBOLOS(TABLA_SIMBOLOS, llave, contador_global);                 //se agrega a la tabla de simbolos
                     contador_global++;                                                          //se incrementa el valor de las llave global
              } //8
@@ -948,12 +982,12 @@ YY_RULE_SETUP
 case 10:
 /* rule 10 can match eol */
 YY_RULE_SETUP
-#line 160 "Sintactico.l"
+#line 162 "Sintactico.l"
 {renglones++;} //contador de renglones
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 162 "Sintactico.l"
+#line 164 "Sintactico.l"
 { cont_errores++;
     archivoError=fopen("ERRORES.txt","a"); //se abre el archivo en modo escritura
     if (archivoError != NULL) {
@@ -968,10 +1002,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 174 "Sintactico.l"
+#line 176 "Sintactico.l"
 ECHO;
 	YY_BREAK
-#line 975 "lex.yy.c"
+#line 1009 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1339,6 +1373,10 @@ static int yy_get_next_buffer (void)
 
 	*--yy_cp = (char) c;
 
+    if ( c == '\n' ){
+        --yylineno;
+    }
+
 	(yytext_ptr) = yy_bp;
 	(yy_hold_char) = *yy_cp;
 	(yy_c_buf_p) = yy_cp;
@@ -1415,6 +1453,11 @@ static int yy_get_next_buffer (void)
 	c = *(unsigned char *) (yy_c_buf_p);	/* cast for 8-bit char's */
 	*(yy_c_buf_p) = '\0';	/* preserve yytext */
 	(yy_hold_char) = *++(yy_c_buf_p);
+
+	if ( c == '\n' )
+		
+    yylineno++;
+;
 
 	return c;
 }
@@ -1882,6 +1925,9 @@ static int yy_init_globals (void)
      * This function is called from yylex_destroy(), so don't allocate here.
      */
 
+    /* We do not touch yylineno unless the option is enabled. */
+    yylineno =  1;
+    
     (yy_buffer_stack) = NULL;
     (yy_buffer_stack_top) = 0;
     (yy_buffer_stack_max) = 0;
@@ -1976,7 +2022,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 174 "Sintactico.l"
+#line 176 "Sintactico.l"
 
 
 
@@ -2008,15 +2054,10 @@ int main(int argc, char *argv[]) {
     printCadenas(TABLA_CADENAS, cont_cadena);
     ATOMOS *atom=malloc(sizeof(ATOMOS));
     for (int i = 0; i<= contador_global; i++){
-        printf("%s\n", TABLA_SIMBOLOS->tokens[i].dato);
         generate_atom(TABLA_SIMBOLOS, TABLA_ATOMOS, i, atom);
+        
     }
     printAtomos(TABLA_ATOMOS, contador_global);
-    
-    
-   
-
-
 
     free(TABLA_CADENAS);
     free(TABLA_CONSTANTES);
